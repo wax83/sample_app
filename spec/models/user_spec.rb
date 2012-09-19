@@ -4,15 +4,15 @@ describe User do
 
   before do 
     @user = User.new(
-      name:                  "Example User", 
-      email:                 "user@example.com",
-      password:              "foobar", 
+      name:     "Example User", 
+      email:    "user@example.com",
+      password: "foobar", 
       password_confirmation: "foobar")
   end 
 
   subject { @user }
 
-  # user.respond_to?(:name, :email, etc.)
+  # user.respond_to?(:name, etc.)
   it { should respond_to :name }
   it { should respond_to :email }
   it { should respond_to :password_digest }
