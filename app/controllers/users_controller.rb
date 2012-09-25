@@ -1,4 +1,12 @@
 class UsersController < ApplicationController
+  before_filter :signed_in_user, only: [:index, :edit, :update]
+  before_filter :correct_user,   only: [:edit, :update]
+  before_filter :admin_user,     only: :destroy
+
+  def index
+    @users = User.paginate(page: params[:page])    
+  end   
+
   def new
     @user = User.new
   end
@@ -18,4 +26,48 @@ class UsersController < ApplicationController
   def show
     @user = User.find(params[:id])
   end
+
+  def edit
+    # trying to hit users/x/edit but,
+    # signed_in_user runs first  
+  end
+
+  def update  
+    @user = User.find(params[:id])
+
+    if @user.update_attributes(params[:user])
+      sign_in @user
+      flash[:success] = "Profile updated" 
+      redirect_to @user # /users/x/
+    else
+      render 'edit'
+    end
+  end
+
+  def destroy
+    User.find(params[:id]).destroy
+    flash[:success] = "User deleted"
+    redirect_to users_path # back to the list
+  end
+
+
+  # private methods for authentication
+  private
+
+    def signed_in_user
+      unless signed_in?
+        store_location # sessions_helper  
+        redirect_to signin_path, notice: "Please sign in." 
+      end
+    end
+
+    def correct_user
+      @user = User.find(params[:id])
+
+      redirect_to root_path unless current_user?(@user)
+    end
+
+    def admin_user
+      redirect_to root_path unless current_user.admin?
+    end
 end

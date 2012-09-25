@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
 
   # email must be downcase before saving it to the db
   before_save { |user| user.email = user.email.downcase }
-  before_save :create_remember_token
+  before_save :create_remember_token # changes with every save!
 
   validates :name, :email, presence: true
   validates :name, length: { maximum: 50 }

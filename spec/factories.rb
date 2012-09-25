@@ -1,8 +1,13 @@
 FactoryGirl.define do 
   factory :user do
-    name     "Akos Bacso"
-    email    "akos.bacso@gmail.com"
+    sequence(:name)  { |n| "Person #{n}" }
+    sequence(:email) { |n| "person_#{n}@somewhere.com" }
     password "foobar"
     password_confirmation "foobar"
+
+    # FactoryGirl does'nt give a sh.t about protected attributes.
+    factory :admin do
+      admin true
+    end
   end
 end
