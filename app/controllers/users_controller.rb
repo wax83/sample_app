@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   before_filter :admin_user,     only: :destroy
 
   def index
-    @users = User.paginate(page: params[:page])    
+    @users = User.paginate(page: params[:page])
   end   
 
   def new
@@ -29,16 +29,16 @@ class UsersController < ApplicationController
 
   def edit
     # trying to hit users/x/edit but,
-    # signed_in_user runs first  
+    # signed_in_user then correct_user runs first  
   end
 
   def update  
-    @user = User.find(params[:id])
+    # @user = User.find(params[:id])
 
     if @user.update_attributes(params[:user])
       sign_in @user
       flash[:success] = "Profile updated" 
-      redirect_to @user # /users/x/
+      redirect_to @user #  /user/1/
     else
       render 'edit'
     end
