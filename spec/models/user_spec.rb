@@ -34,6 +34,12 @@ describe User do
     end
   end
 
+  describe "whith admin attribute set to 'true'" do
+    before { @user.save && @user.toggle!(:admin) }
+
+    it { should be_admin }# user.admin?
+  end
+
   describe "when name is not present" do
     before { @user.name = " " }
     it { should_not be_valid }
