@@ -1,0 +1,13 @@
+<!-- 
+form for @micropost in 'static_pages#home',
+posting to 'microposts#create'
+ -->
+
+<%= form_for @micropost do |f| %>
+  <%= render 'shared/error_messages', object: @micropost %>
+  <div class="field">
+    <%= f.text_area :content, placeholder: "Compose new micropost..." %>
+
+    <%= f.submit "Post", class: "btn btn-large btn-primary" %>
+  </div>
+<% end %>

@@ -1,10 +1,10 @@
 class UsersController < ApplicationController
-  before_filter :signed_in_user, only: [:index, :edit, :update]
-  before_filter :correct_user,   only: [:edit, :update]
+  before_filter :signed_in_user, only: [:index, :edit, :update, :destroy] # first check if the user is signed in,
+  before_filter :correct_user,   only: [:edit, :update] # then if he/she's a correct user to edit/update
   before_filter :admin_user,     only: :destroy
 
   def index
-    @users = User.paginate(page: params[:page])
+    @users = User.paginate(page: params[:page]) # per_page in the params
   end   
 
   def new
@@ -25,6 +25,7 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
+    @microposts = @user.microposts.paginate(page: params[:page]) # Wow!
   end
 
   def edit
@@ -36,7 +37,7 @@ class UsersController < ApplicationController
     # @user = User.find(params[:id])
 
     if @user.update_attributes(params[:user])
-      sign_in @user
+      sign_in @user # sign in to the updated profile
       flash[:success] = "Profile updated" 
       redirect_to @user #  /user/1/
     else
@@ -54,13 +55,6 @@ class UsersController < ApplicationController
   # private methods for authentication
   private
 
-    def signed_in_user
-      unless signed_in?
-        store_location # sessions_helper  
-        redirect_to signin_path, notice: "Please sign in." 
-      end
-    end
-
     def correct_user
       @user = User.find(params[:id])
 
@@ -70,4 +64,5 @@ class UsersController < ApplicationController
     def admin_user
       redirect_to root_path unless current_user.admin?
     end
+    
 end

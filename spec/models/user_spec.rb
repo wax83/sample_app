@@ -20,10 +20,12 @@ describe User do
   it { should respond_to :password_confirmation }
   it { should respond_to :remember_token }
   it { should respond_to :admin }
+  it { should respond_to :microposts } # via has_many
   it { should respond_to :authenticate }
+  it { should respond_to :feed }
   
   it { should be_valid } # user.valid?
-  it { should_not be_admin } # user.admin?
+  it { should_not be_admin } # user.admin? (default: false)
 
   describe "accessible attributes" do
     
@@ -120,5 +122,40 @@ describe User do
     it "should have a nonblank remember token" do
       subject.remember_token.should_not be_blank
     end 
+  end
+
+  describe "micropost associations" do
+    before { @user.save }
+
+    let!(:older_post) do
+      FactoryGirl.create(:micropost, user: @user, created_at: 1.day.ago)
+    end
+    let!(:newer_post) do
+      FactoryGirl.create(:micropost, user: @user, created_at: 1.hour.ago)
+    end
+
+    it "it should have the right microposts in the right order" do
+      @user.microposts.should == [newer_post, older_post]
+      # remember @user.microposts returns an array!
+    end
+
+    it "should destroy associated micropost" do
+      microposts = @user.microposts
+      @user.destroy
+
+      microposts.each do |micropost|
+        Micropost.find_by_id(micropost.id).should be_nil
+        # micropost.id.nil? should evaluate to true!
+      end
+    end
+
+    describe "status" do
+      let(:user) { FactoryGirl.create(:user) }
+      let(:unfollowed_post) { FactoryGirl.create(:micropost, user: user) }
+
+      its(:feed) { should include(older_post) }
+      its(:feed) { should include(newer_post) }
+      its(:feed) { should_not include(unfollowed_post) }
+    end
   end
 end

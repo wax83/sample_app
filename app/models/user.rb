@@ -1,6 +1,7 @@
 class User < ActiveRecord::Base
   attr_accessible :name, :email, :password, :password_confirmation
   has_secure_password
+  has_many :microposts, dependent: :destroy # user_spec:141
 
   # email must be downcase before saving it to the db
   before_save { |user| user.email = user.email.downcase }
@@ -13,6 +14,12 @@ class User < ActiveRecord::Base
                     uniqueness: { case_sensitive: false }
   validates :password, length: { minimum: 6 }
   validates :password_confirmation, presence: true
+
+  def feed
+    # This is only a proto-feed.
+    Micropost.where("user_id = ?", id) # simple sql,
+    # all microposts corresponding to that id/user_id
+  end
 
   private
 
